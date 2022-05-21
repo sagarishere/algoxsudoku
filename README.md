@@ -14,21 +14,20 @@ A high-performance Sudoku solver implemented in Go. The application supports fou
 ## Architecture & Algorithms
 
 ### 1. Traditional Grid Backtracking
-An implementation of Depth-First Search (DFS) directly on the $9\times9$ grid array. It traverses the grid cell-by-cell, attempts digit placement from 1 to 9, and validates constraints (row, column, $3\times3$ box) directly on the grid before recurring. If a path fails, it resets the cell and backtracks.
+An implementation of Depth-First Search (DFS) directly on the $9\times9$ grid array. It traverses the grid cell-by-cell, attempts digit placement from 1 to 9, and validates constraints (row, column, $3\times3$ box) directly on the grid before recurring.
+*   **Detailed Guide**: See [Traditional Grid Backtracking Detailed Explanation](docs/backtracking.md).
 
 ### 2. Knuth's Algorithm X (Exact Cover via Dancing Links)
-For advanced performance, the Sudoku grid is formulated as an **Exact Cover Problem**.
-- **Constraint Matrix**: Maps the Sudoku rules to a binary matrix containing $729$ rows (all possible cell-row-value candidates) and $324$ columns (the constraint headers representing cell, row, column, and box constraints).
-- **Dancing Links (DLX)**: Employs a toroidal, circularly doubly-linked list node grid. The recursive search chooses the constraint column with the fewest active rows (minimum size heuristic) and covers/uncovers rows using Knuth's pointer manipulation algorithm. Pre-existing clues on the board are pre-covered at startup to optimize execution.
+For advanced performance, the Sudoku grid is formulated as an **Exact Cover Problem**. It employs a toroidal, circularly doubly-linked list node grid (Dancing Links) to manipulate columns and rows.
+*   **Detailed Guide**: See [Knuth's Algorithm X (Exact Cover) Detailed Explanation](docs/exact_cover.md).
 
 ### 3. Bitmask Backtracking
-An optimized DFS backtracking engine. Instead of searching lists or maintaining dynamic doubly linked pointers, it stores the state of placed numbers in each row, column, and $3\times3$ box as bits inside $9$ integers (`rowsUsed`, `colsUsed`, `boxesUsed`). Checking validity resolves via single bitwise AND (`&`) operations, placing a digit updates via bitwise OR (`|`), and backtracking clears via bitwise AND NOT (`&^`). This completely eliminates memory allocation and pointer-chasing, keeping all state within ultra-fast CPU L1 cache or registers.
+An optimized DFS backtracking engine. Instead of searching lists or maintaining dynamic doubly linked pointers, it stores the state of placed numbers in each row, column, and $3\times3$ box as bits inside $9$ integers.
+*   **Detailed Guide**: See [Bitmask Backtracking Detailed Explanation](docs/bitmask.md).
 
 ### 4. SIMD-Optimized (Tdoku-Inspired)
-A highly optimized, hardware-friendly solver that simulates SIMD parallel vector architectures using native Go 64-bit integer registers:
-- **Bitboard Candidate Representation**: The complete board is modeled as candidate bitboards (`Candidates [81]uint16`).
-- **Parallel Constraint Propagation**: Integrates DPLL-style constraint satisfying. It recursively propagates Naked Singles and Hidden Singles across horizontal and vertical units.
-- **Hardware Acceleration**: Employs Go's native, compiler-optimized `math/bits` package functions (e.g. `bits.OnesCount`, `bits.TrailingZeros`) which compile directly to hardware instructions (e.g., `POPCNT`, `TZCNT` / `BSF`) on both x86_64 and ARM64 (Apple Silicon) architectures.
+A highly optimized, hardware-friendly solver that simulates SIMD parallel vector architectures using native Go 64-bit integer registers, constraint propagation, and MRV backtracking.
+*   **Detailed Guide**: See [SIMD-Optimized Tdoku Solver Detailed Explanation](docs/tdoku.md).
 
 ---
 
