@@ -1,14 +1,14 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
 	"sudoku/sudoku"
 )
 
 // Establish Global Variables
-var inputBoard = os.Args[1:]
-var board, validInput = sudoku.CreateBoard(inputBoard)
+var board [9][9]int
+var validInput bool
 
 // An algorithm which solves a given sudoku puzzle using backtracking
 func recursiveSolve(rowPosition, columnPosition int) bool {
@@ -42,6 +42,18 @@ func recursiveSolve(rowPosition, columnPosition int) bool {
 // INSPIRATION: https://www.geeksforgeeks.org/sudoku-backtracking-7/
 // INSPIRATION: https://www.5minsofcode.com/sodoku_solver.html
 func main() {
+	algoFlag := flag.String("algo", "backtracking", "Solver algorithm to use: 'backtracking' or 'exact-cover' (or 'algo-x')")
+	flag.Parse()
+
+	if *algoFlag != "backtracking" && *algoFlag != "exact-cover" && *algoFlag != "algo-x" {
+		fmt.Printf("Error: Unknown algorithm '%s'. Supported values are 'backtracking' and 'exact-cover'\n", *algoFlag)
+		return
+	}
+
+	inputBoard := flag.Args()
+	var err bool
+	board, err = sudoku.CreateBoard(inputBoard)
+	validInput = err
 
 	canProceed := true
 
@@ -57,7 +69,15 @@ func main() {
 		fmt.Println()
 		fmt.Println("Initial sudoku board shown below:\n")
 		sudoku.PrintBoard(board)
-		if recursiveSolve(0, 0) {
+
+		var solved bool
+		if *algoFlag == "exact-cover" || *algoFlag == "algo-x" {
+			solved = sudoku.SolveExactCover(&board)
+		} else {
+			solved = recursiveSolve(0, 0)
+		}
+
+		if solved {
 			fmt.Println()
 			fmt.Println("The following solution was found:\n")
 			sudoku.PrintBoard(board)
