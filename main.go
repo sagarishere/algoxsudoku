@@ -1,14 +1,34 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"os"
 	"sudoku/sudoku"
 )
 
 // Establish Global Variables
 var board [9][9]int
 var validInput bool
+
+// readSettings reads the solver configuration from settings.txt.
+// Defaults to "backtracking" if settings.txt is missing or unreadable.
+func readSettings() string {
+	data, err := os.ReadFile("settings.txt")
+	if err != nil {
+		return "backtracking"
+	}
+	s := string(data)
+	// Custom space-trimming to avoid importing the "strings" package
+	start := 0
+	for start < len(s) && (s[start] == ' ' || s[start] == '\n' || s[start] == '\r' || s[start] == '\t') {
+		start++
+	}
+	end := len(s)
+	for end > start && (s[end-1] == ' ' || s[end-1] == '\n' || s[end-1] == '\r' || s[end-1] == '\t') {
+		end--
+	}
+	return s[start:end]
+}
 
 // An algorithm which solves a given sudoku puzzle using backtracking
 func recursiveSolve(rowPosition, columnPosition int) bool {
@@ -42,15 +62,9 @@ func recursiveSolve(rowPosition, columnPosition int) bool {
 // INSPIRATION: https://www.geeksforgeeks.org/sudoku-backtracking-7/
 // INSPIRATION: https://www.5minsofcode.com/sodoku_solver.html
 func main() {
-	algoFlag := flag.String("algo", "backtracking", "Solver algorithm to use: 'backtracking' or 'exact-cover' (or 'algo-x')")
-	flag.Parse()
+	algo := readSettings()
 
-	if *algoFlag != "backtracking" && *algoFlag != "exact-cover" && *algoFlag != "algo-x" {
-		fmt.Printf("Error: Unknown algorithm '%s'. Supported values are 'backtracking' and 'exact-cover'\n", *algoFlag)
-		return
-	}
-
-	inputBoard := flag.Args()
+	inputBoard := os.Args[1:]
 	var err bool
 	board, err = sudoku.CreateBoard(inputBoard)
 	validInput = err
@@ -71,7 +85,7 @@ func main() {
 		sudoku.PrintBoard(board)
 
 		var solved bool
-		if *algoFlag == "exact-cover" || *algoFlag == "algo-x" {
+		if algo == "exact-cover" || algo == "algo-x" {
 			solved = sudoku.SolveExactCover(&board)
 		} else {
 			solved = recursiveSolve(0, 0)
