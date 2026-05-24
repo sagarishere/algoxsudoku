@@ -6,8 +6,9 @@ A Sudoku solver implemented in Go using **Knuth's Algorithm X (Exact Cover)** wi
 
 - **Algorithm X (Exact Cover)**: Formulates Sudoku as an exact cover problem and solves it with Dancing Links.
 - **Grading Compliant**: Only prints the final solution or `Error` for invalid boards, with no extra debug lines.
-- **Dependency-Free**: Uses only allowed Go built-ins (`os` and `fmt` in the entry point).
+- **Dependency-Free**: Uses only allowed Go built-ins (`os` and `fmt`).
 - **Robust Validation**: Pre-checks board dimensions, characters, row/column length, and minimum clues (minimum 17 numbers of which at least 8 must be unique).
+- **Single-file layout**: All logic lives in `main.go`, read top-to-bottom with helpers at the bottom.
 
 ---
 
@@ -57,29 +58,19 @@ Error
 ## Directory Structure
 
 ```
-├── main.go               # Entry point
-├── main_test.go          # 18-case integration test suite
+├── main.go               # Entry point, solver, and helpers
+├── main_test.go          # Integration and unit tests
 ├── go.mod                # Module specification
-└── sudoku/
-    ├── algoX.go          # DLX matrix and Algorithm X solver
-    ├── algoX_test.go     # Unit tests for the exact-cover solver
-    ├── createBoard.go    # Argument-to-grid parsing
-    ├── printBoard.go     # Output formatting
-    └── startValid.go     # Board rules and clue pre-validation
+└── docs/
+    └── exact_cover.md    # Algorithm explanation
 ```
 
 ---
 
 ## Testing
 
-Integration tests in `main_test.go` compile the binary once and run all 18 subject-defined scenarios (valid and invalid layouts).
-
 ```bash
-go test -v ./...
+go test -v .
 ```
 
-Unit tests for the DLX solver:
-
-```bash
-go test -v ./sudoku -run TestSolveExactCover
-```
+Integration tests compile the binary and run 18 subject-defined scenarios. `TestSolveExactCover` verifies the DLX solver directly.

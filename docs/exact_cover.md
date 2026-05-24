@@ -47,7 +47,7 @@ This is why it's called "Dancing Links"—nodes seem to dance out of the list an
 
 ## Core Code Snippet
 
-Here is the recursive constraint solver implemented in [algoX.go](file:///Users/sagar/Downloads/sudoku/sudoku/algoX.go):
+Here is the recursive constraint solver implemented in [main.go](file:///Users/sagar/Downloads/sudoku-gritlab/main.go):
 
 ```go
 func solveDLX(root *Node, solution *[]*Node, board *[9][9]int) bool {
