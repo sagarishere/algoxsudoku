@@ -9,10 +9,6 @@ import (
 var board [9][9]int
 var validInput bool
 
-// See below for inspiration
-// INSPIRATION: https://charltonaustin.com/posts/sudoku-using-go-lang/
-// INSPIRATION: https://www.geeksforgeeks.org/sudoku-backtracking-7/
-// INSPIRATION: https://www.5minsofcode.com/sodoku_solver.html
 func main() {
 	inputBoard := os.Args[1:]
 	var err bool
