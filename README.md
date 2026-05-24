@@ -11,23 +11,61 @@ A Sudoku solver implemented in Go using **Knuth's Algorithm X (Exact Cover)** wi
 
 ---
 
+## What is Sudoku?
+
+**Sudoku** is a number-placement puzzle on a **9×9 grid**. Some cells are filled in at the start (the **clues** or **givens**); the rest are empty. Your goal is to fill every empty cell with a digit from **1 to 9** so that the completed grid satisfies **three rules at the same time**.
+
+Think of it as a logic puzzle, not a math puzzle — you never multiply or add. You only place digits so that nothing repeats where it should not.
+
+### Rule 1: Rows
+
+Each of the **9 horizontal rows** must contain the digits **1 through 9 exactly once**. No digit may appear twice in the same row.
+
+![Rule of rows: each horizontal row must contain 1–9 with no repeats](images/three_rules/1.%20rule%20of%20rows.jpg)
+
+When checking a row, scan left to right and make sure you see each number from 1 to 9 once — and only once.
+
+### Rule 2: Columns
+
+Each of the **9 vertical columns** must also contain **1 through 9 exactly once**. No digit may appear twice in the same column.
+
+![Rule of columns: each vertical column must contain 1–9 with no repeats](images/three_rules/2.%20rule%20of%20columns.jpg)
+
+When checking a column, scan top to bottom the same way: every digit 1–9 appears once, with no duplicates.
+
+### Rule 3: Blocks (3×3 boxes)
+
+The 9×9 grid is divided into **nine 3×3 sub-grids** (often called **boxes** or **blocks**). Each block must contain **1 through 9 exactly once** as well.
+
+![Rule of blocks: each 3×3 box must contain 1–9 with no repeats](images/three_rules/3.%20rule_of_blocks.jpg)
+
+Thicker lines on the grid mark the block boundaries. When you place a digit, it must be valid for its **row**, its **column**, and its **block** all at once.
+
+### Putting the three rules together
+
+A completed Sudoku is a grid where:
+
+- Every row is a permutation of 1–9.
+- Every column is a permutation of 1–9.
+- Every 3×3 block is a permutation of 1–9.
+
+This solver takes a partially filled grid (via command-line input), checks that the starting clues are legal, and fills in the rest automatically. The sections below explain **how** it does that.
+
+---
+
 ## How It Works
 
 This section is written for **complete beginners**. We start with everyday ideas (lists, links, walking from one item to the next), then build up to Knuth's **Algorithm X** and **Dancing Links (DLX)**, which is how this project solves Sudoku.
 
-**Reading tip:** Skim the headings first. If you already know linked lists, jump to [From Sudoku rules to Exact Cover](#from-sudoku-rules-to-exact-cover).
+**Reading tip:** If you already know Sudoku, you can skim [What is Sudoku?](#what-is-sudoku) above. If you already know linked lists, jump to [From Sudoku rules to Exact Cover](#from-sudoku-rules-to-exact-cover).
 
 ---
 
 ### What problem are we solving?
 
-A Sudoku board is a 9×9 grid. Some cells are filled; others are empty. The rules say:
+Given a 9×9 Sudoku board with some cells already filled (see the [three rules](#what-is-sudoku) above), we must fill every empty cell so that **all three rules hold at once** — valid rows, columns, and blocks together.
 
-- Each **row** must contain the digits 1–9 exactly once.
-- Each **column** must contain 1–9 exactly once.
-- Each **3×3 box** must contain 1–9 exactly once.
-
-The solver must fill every empty cell so **all** rules hold at once. There are many ways to try digits and backtrack; this project uses a famous, efficient method: turn Sudoku into an **exact cover** problem and search with **Dancing Links**.
+There are many ways to try digits and backtrack when you hit a dead end. This project uses a famous, efficient method: turn Sudoku into an **exact cover** problem and search with **Dancing Links**.
 
 ---
 
@@ -386,6 +424,7 @@ Error
 ```
 ├── main.go        # Entry point, solver, and helpers
 ├── main_test.go   # Integration and unit tests
+├── images/        # Diagrams (Sudoku rules, etc.)
 └── go.mod
 ```
 
